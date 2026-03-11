@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "verify-api"
+name = "runproof-api"
 version = "0.1.0"
 description = "Backend API for RunProof verification UI"
 requires-python = ">=3.10"
@@ -22,4 +22,4 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/verify_api"]
+packages = ["src/runproof_api"]

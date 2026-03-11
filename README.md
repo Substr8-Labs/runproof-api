@@ -1,4 +1,4 @@
-# verify-api
+# runproof-api
 
 Backend API for RunProof verification UI.
 
@@ -18,7 +18,7 @@ Backend API for RunProof verification UI.
 pip install -e .
 
 # Run server
-uvicorn verify_api:app --reload --port 8000
+uvicorn runproof_api:app --reload --port 8000
 
 # Test
 curl http://localhost:8000/health

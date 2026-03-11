@@ -12,8 +12,8 @@ import pytest
 from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 
-from verify_api import app
-from verify_api.schemas import VerificationStatus
+from runproof_api import app
+from runproof_api.schemas import VerificationStatus
 
 
 client = TestClient(app)
