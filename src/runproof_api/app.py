@@ -52,7 +52,9 @@ app.add_middleware(
 import os
 from pathlib import Path
 
-PROOF_DIR = Path(os.environ.get("PROOF_STORAGE_DIR", "/data/proofs"))
+# Use /data/proofs if volume mounted, else fall back to local ./proofs
+_default_proof_dir = "/data/proofs" if os.path.exists("/data") else "./proofs"
+PROOF_DIR = Path(os.environ.get("PROOF_STORAGE_DIR", _default_proof_dir))
 PROOF_DIR.mkdir(parents=True, exist_ok=True)
 
 
