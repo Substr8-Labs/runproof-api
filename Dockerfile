@@ -12,9 +12,10 @@ COPY . .
 # Install dependencies
 RUN pip install --no-cache-dir -e .
 
-EXPOSE 8765
+ENV PORT=8765
+EXPOSE $PORT
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8765/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=5 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
 
-CMD ["uvicorn", "src.runproof_api.app:app", "--host", "0.0.0.0", "--port", "8765"]
+CMD uvicorn src.runproof_api.app:app --host 0.0.0.0 --port ${PORT}
