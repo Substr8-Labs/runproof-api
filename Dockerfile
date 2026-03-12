@@ -13,9 +13,5 @@ COPY . .
 RUN pip install --no-cache-dir -e .
 
 ENV PORT=8765
-EXPOSE $PORT
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=5 \
-    CMD curl -f http://localhost:${PORT}/health || exit 1
-
-CMD uvicorn src.runproof_api.app:app --host 0.0.0.0 --port ${PORT}
+CMD ["sh", "-c", "uvicorn src.runproof_api.app:app --host 0.0.0.0 --port $PORT"]
