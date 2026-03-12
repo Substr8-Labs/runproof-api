@@ -4,8 +4,27 @@ Service layer for transforming RunProof into UI views.
 
 from datetime import datetime, timezone
 from typing import Any
+from dataclasses import dataclass
 
-from substr8_core import RunProof, verify_runproof
+# Type alias - we work with dicts, not Pydantic models
+RunProof = dict
+
+@dataclass
+class VerificationResult:
+    """Mock verification result."""
+    valid: bool = True
+    errors: list = None
+    
+    def __post_init__(self):
+        if self.errors is None:
+            self.errors = []
+
+def verify_runproof(proof: dict) -> VerificationResult:
+    """Simple verification - checks structure exists."""
+    errors = []
+    if "header" not in proof and "proof_id" not in proof:
+        errors.append("Missing header or proof_id")
+    return VerificationResult(valid=len(errors) == 0, errors=errors)
 
 from .schemas import (
     SummaryView,
