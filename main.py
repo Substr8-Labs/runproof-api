@@ -321,6 +321,22 @@ def load_active_runs():
     """Load active runs from database on startup."""
     global active_runs
     with get_db() as conn:
+        # Ensure table exists
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS active_runs (
+                run_id TEXT PRIMARY KEY,
+                trace_id TEXT,
+                agent_id TEXT,
+                adapter TEXT,
+                session_key TEXT,
+                started_at TEXT,
+                status TEXT DEFAULT 'active',
+                event_count INTEGER DEFAULT 0,
+                updated_at TEXT
+            )
+        """)
+        conn.commit()
+        
         rows = conn.execute("""
             SELECT run_id, trace_id, agent_id, adapter, session_key, started_at, status, event_count
             FROM active_runs WHERE status = 'active'
