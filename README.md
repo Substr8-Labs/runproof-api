@@ -14,6 +14,56 @@ Layer 2: Signatures         (Ed25519 attestation)
 Layer 1: Receipts           (atomic proofs)
 ```
 
+## RunProof + NemoClaw/OpenShell
+
+**Secure Execution, Verifiable Execution**
+
+[NemoClaw](https://github.com/NVIDIA/NemoClaw) and [OpenShell](https://github.com/NVIDIA/OpenShell) provide sandboxing, policy enforcement, and privacy routing for OpenClaw agents. RunProof provides the cryptographic proof of what those agents actually did.
+
+| Layer | Responsibility |
+|-------|----------------|
+| **NemoClaw/OpenShell** | Sandboxing, policy enforcement, privacy routing, secure inference |
+| **RunProof** | Receipts, proof graphs, state proofs, external anchoring |
+
+> **NemoClaw secures execution. RunProof proves execution.**
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   AUDIT / COMPLIANCE                │
+│                      RunProof                       │
+│   (receipts, proof graphs, ledgers, anchoring)      │
+├─────────────────────────────────────────────────────┤
+│                  SECURE RUNTIME                     │
+│              NemoClaw + OpenShell                   │
+│  (sandbox, policy guardrails, privacy routing)      │
+├─────────────────────────────────────────────────────┤
+│                   AGENT ENGINE                      │
+│                     OpenClaw                        │
+└─────────────────────────────────────────────────────┘
+```
+
+### How It Works
+
+1. Agent runs inside OpenShell sandbox (NemoClaw)
+2. OpenShell enforces network/filesystem/process policies
+3. RunProof captures events → produces cryptographic receipt
+4. Receipt includes: event hashes, proof graph, policy bindings
+5. Third party can verify receipt independently (no platform access needed)
+
+### Runtime-Neutral Design
+
+RunProof is designed to complement secure runtimes, not replace them. It captures execution evidence from:
+- OpenClaw (direct integration)
+- NemoClaw/OpenShell environments
+- LangGraph, AutoGen, custom harnesses
+- Any runtime that emits structured events
+
+The verification layer is portable. The receipt travels with the work.
+
+---
+
 ## Quick Start
 
 ```bash
