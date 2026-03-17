@@ -321,7 +321,12 @@ def load_active_runs():
     """Load active runs from database on startup."""
     global active_runs
     with get_db() as conn:
-        # Ensure table exists
+        # Ensure table exists with correct schema
+        try:
+            conn.execute("SELECT last_event_at FROM active_runs LIMIT 1")
+        except:
+            conn.execute("DROP TABLE IF EXISTS active_runs")
+        
         conn.execute("""
             CREATE TABLE IF NOT EXISTS active_runs (
                 run_id TEXT PRIMARY KEY,
@@ -332,7 +337,7 @@ def load_active_runs():
                 started_at TEXT,
                 status TEXT DEFAULT 'active',
                 event_count INTEGER DEFAULT 0,
-                updated_at TEXT
+                last_event_at TEXT
             )
         """)
         conn.commit()
