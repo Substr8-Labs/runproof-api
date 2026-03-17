@@ -1680,25 +1680,44 @@ def generate_id(prefix: str) -> str:
 # ============ API Endpoints ============
 
 def init_lifecycle_table():
-    """Initialize agent_lifecycle table."""
+    """Initialize agent_lifecycle table with all required columns."""
     with get_db() as conn:
+        # Check if table exists with wrong schema - drop and recreate
+        try:
+            conn.execute("SELECT total_runs FROM agent_lifecycle LIMIT 1")
+        except:
+            # Table doesn't exist or missing columns - recreate
+            conn.execute("DROP TABLE IF EXISTS agent_lifecycle")
+        
         conn.execute("""
             CREATE TABLE IF NOT EXISTS agent_lifecycle (
                 agent_id TEXT PRIMARY KEY,
                 status TEXT DEFAULT 'active',
                 registered_at TEXT,
+                activated_at TEXT,
                 last_heartbeat TEXT,
-                metadata TEXT,
                 paused_at TEXT,
-                retired_at TEXT
+                retired_at TEXT,
+                ledger_bound INTEGER DEFAULT 0,
+                ledger_first_seq INTEGER,
+                ledger_last_seq INTEGER,
+                total_runs INTEGER DEFAULT 0,
+                total_entries INTEGER DEFAULT 0,
+                metadata TEXT
             )
         """)
         conn.commit()
 
 
 def init_anchoring_table():
-    """Initialize external_anchors table."""
+    """Initialize external_anchors table with all required columns."""
     with get_db() as conn:
+        # Check if table exists with wrong schema - drop and recreate
+        try:
+            conn.execute("SELECT anchor_network FROM external_anchors LIMIT 1")
+        except:
+            conn.execute("DROP TABLE IF EXISTS external_anchors")
+        
         conn.execute("""
             CREATE TABLE IF NOT EXISTS external_anchors (
                 id TEXT PRIMARY KEY,
@@ -1706,12 +1725,15 @@ def init_anchoring_table():
                 proof_type TEXT,
                 proof_hash TEXT,
                 anchor_type TEXT,
+                anchor_network TEXT,
+                anchor_tx_id TEXT,
+                anchor_block INTEGER,
+                anchor_timestamp TEXT,
+                anchor_url TEXT,
                 status TEXT DEFAULT 'pending',
-                submitted_at TEXT,
-                confirmed_at TEXT,
-                transaction_id TEXT,
-                block_number INTEGER,
-                anchor_data TEXT
+                confirmation_data TEXT,
+                created_at TEXT,
+                confirmed_at TEXT
             )
         """)
         conn.commit()
