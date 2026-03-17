@@ -1,24 +1,23 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "runproof-api"
-version = "0.1.0"
-description = "Backend API for RunProof verification UI"
+version = "0.8.0"
+description = "RunProof Protocol API - Verifiable AI Agent Execution"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "fastapi>=0.104.0",
-    "uvicorn>=0.24.0",
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
     "pydantic>=2.0.0",
-    "python-multipart>=0.0.6",
+    "cryptography>=42.0.0",
+    "httpx>=0.26.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
-    "httpx>=0.25.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/runproof_api"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

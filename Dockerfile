@@ -2,16 +2,21 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY . .
-
 # Install dependencies
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir \
+    fastapi \
+    uvicorn \
+    pydantic \
+    cryptography \
+    httpx
 
-ENV PORT=8765
+# Copy application
+COPY main.py .
+COPY data/ ./data/
 
-CMD ["sh", "-c", "uvicorn src.runproof_api.app:app --host 0.0.0.0 --port $PORT"]
+# Create data directory if not exists
+RUN mkdir -p /app/data
+
+EXPOSE 8097
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8097"]

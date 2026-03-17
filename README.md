@@ -1,47 +1,74 @@
-# runproof-api
+# RunProof API
 
-Backend API for RunProof verification UI.
+Backend API for the RunProof Protocol — cryptographically verifiable receipts for AI agent execution.
 
-## 4 Views
+## Protocol Layers
 
-| View | Endpoint | Purpose |
-|------|----------|---------|
-| Summary | `GET /proof/{id}/summary` | Green tick page, status, IDs |
-| Timeline | `GET /proof/{id}/timeline` | Ordered events, developer view |
-| Lineage | `GET /proof/{id}/lineage` | Parent/child tree, delegations |
-| Report | `GET /proof/{id}/report` | Audit checks, verification details |
+```
+Layer 7: Agent Lifecycle    (always-on agents)
+Layer 6: External Anchoring (blockchain/notary)
+Layer 5: Policy Binding     (governance)
+Layer 4: State Proofs       (transitions)
+Layer 3: Proof Graphs       (DAG composition)
+Layer 2: Signatures         (Ed25519 attestation)
+Layer 1: Receipts           (atomic proofs)
+```
 
 ## Quick Start
 
 ```bash
-# Install
-pip install -e .
+# Run locally
+pip install fastapi uvicorn pydantic cryptography
+uvicorn main:app --port 8097
 
-# Run server
-uvicorn runproof_api:app --reload --port 8000
-
-# Test
-curl http://localhost:8000/health
+# Run with Docker
+docker build -t runproof-api .
+docker run -p 8097:8097 runproof-api
 ```
 
-## API Usage
+## API Endpoints
 
-```python
-import httpx
+### Run Lifecycle
+- `POST /v1/run/start` — Start a new run
+- `POST /v1/run/event` — Record event (auto-creates run)
+- `POST /v1/run/end` — End run and generate proof
+- `GET /v1/runproof/{run_id}` — Get proof
+- `GET /v1/runproof/{run_id}/verify` — Verify proof
 
-# Verify a proof
-response = httpx.post("http://localhost:8000/verify", json={"proof": proof_dict})
-result = response.json()
-print(result["valid"])  # True/False
-print(result["proof_id"])
+### Proof Graphs
+- `POST /v1/proof-graph/link` — Link proofs
+- `GET /v1/proof-graph/{root_id}` — Get graph
+- `GET /v1/runproof/{run_id}/ancestry` — Get lineage
+- `GET /v1/runproof/{run_id}/descendants` — Get children
 
-# Get all views
-response = httpx.get(f"http://localhost:8000/proof/{proof_id}")
-views = response.json()
-print(views["summary"]["status"])
-print(views["timeline"]["total_events"])
-print(views["report"]["human_summary"])
+### State Proofs
+- `POST /v1/state-proof` — Record state transition
+- `GET /v1/state-chain/{type}/verify` — Verify chain
+
+### Policy Binding
+- `POST /v1/policy-binding` — Bind policy to run
+- `GET /v1/runproof/{run_id}/policies` — Get policies
+
+### External Anchoring
+- `POST /v1/anchor` — Submit for anchoring
+- `POST /v1/anchor/{id}/confirm` — Confirm anchor
+- `GET /v1/anchors/pending` — List pending
+
+### Agent Lifecycle
+- `POST /v1/agent/{id}/register` — Register agent
+- `POST /v1/agent/{id}/heartbeat` — Record heartbeat
+- `GET /v1/agents/active` — List active agents
+
+## Testing
+
+```bash
+pip install pytest pytest-asyncio httpx
+pytest tests/ -v
 ```
+
+## Documentation
+
+Full docs at [docs.substr8labs.com](https://docs.substr8labs.com)
 
 ## License
 
