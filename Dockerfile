@@ -12,9 +12,8 @@ RUN pip install --no-cache-dir \
 
 # Copy application
 COPY main.py .
-COPY data/ ./data/
 
-# Create data directory if not exists
+# Create data directory
 RUN mkdir -p /app/data
 
 EXPOSE 8097
