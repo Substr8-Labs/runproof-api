@@ -1679,7 +1679,6 @@ def generate_id(prefix: str) -> str:
 
 # ============ API Endpoints ============
 
-@app.on_event("startup")
 def init_lifecycle_table():
     """Initialize agent_lifecycle table."""
     with get_db() as conn:
@@ -1718,6 +1717,7 @@ def init_anchoring_table():
         conn.commit()
 
 
+@app.on_event("startup")
 async def startup():
     init_db()
     init_checkpoint_table()
