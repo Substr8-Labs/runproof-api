@@ -1680,11 +1680,51 @@ def generate_id(prefix: str) -> str:
 # ============ API Endpoints ============
 
 @app.on_event("startup")
+def init_lifecycle_table():
+    """Initialize agent_lifecycle table."""
+    with get_db() as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS agent_lifecycle (
+                agent_id TEXT PRIMARY KEY,
+                status TEXT DEFAULT 'active',
+                registered_at TEXT,
+                last_heartbeat TEXT,
+                metadata TEXT,
+                paused_at TEXT,
+                retired_at TEXT
+            )
+        """)
+        conn.commit()
+
+
+def init_anchoring_table():
+    """Initialize external_anchors table."""
+    with get_db() as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS external_anchors (
+                id TEXT PRIMARY KEY,
+                proof_id TEXT,
+                proof_type TEXT,
+                proof_hash TEXT,
+                anchor_type TEXT,
+                status TEXT DEFAULT 'pending',
+                submitted_at TEXT,
+                confirmed_at TEXT,
+                transaction_id TEXT,
+                block_number INTEGER,
+                anchor_data TEXT
+            )
+        """)
+        conn.commit()
+
+
 async def startup():
     init_db()
     init_checkpoint_table()
     init_branch_table()
     init_identity_table()
+    init_lifecycle_table()
+    init_anchoring_table()
     load_or_generate_runtime_key()
     load_active_runs()  # Restore active runs from database
     print(f"[RunProof Builder] Database initialized at {DB_PATH}")
