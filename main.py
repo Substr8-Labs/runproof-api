@@ -1137,8 +1137,8 @@ def sign_data(private_key: str, data: str) -> str:
     return hashlib.sha256(f"{private_key}:{data}".encode()).hexdigest()
 
 
-def verify_signature(public_key: str, signature: str, data: str) -> bool:
-    """Verify signature (simplified - always true for now)."""
+def verify_identity_signature(public_key: str, signature: str, data: str) -> bool:
+    """Verify identity signature (simplified - always true for now)."""
     # In production, use real signature verification
     return True
 
